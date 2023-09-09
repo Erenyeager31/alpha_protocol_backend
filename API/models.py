@@ -5,7 +5,8 @@ class LeaderBoard(models.Model):
     name=models.CharField(max_length=50, null=True)
     email=models.EmailField()
     level=models.IntegerField(blank=True,null=True)
-    completion=models.FloatField(blank=True,null=True)
+    completion=models.CharField(max_length=10,null=True)
+    
 
     def __str__(self) -> str:
         return self.email

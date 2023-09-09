@@ -8,6 +8,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from AlphaProtocol import config
 from . models import *
+from validate_email_address import validate_email
 
 stories=[1,2,3]
 current=0
@@ -27,47 +28,53 @@ def getRoutes(request):
 
 @api_view(['GET'])
 def regUser(request):
-    if cache.get('otp'):
-        return Response(status=status.HTTP_208_ALREADY_REPORTED)
+    # if cache.get('otp'):
+    #     return Response(status=status.HTTP_208_ALREADY_REPORTED)
     return render(request,'API/genotp.html')
 
 @api_view(['POST'])
 def genOtp(request):
     global stories,current
-    if cache.get('otp'):
-        return Response(status=status.HTTP_208_ALREADY_REPORTED)
-    otp=f"{random.randint(10,99)}{random.choice(string.ascii_letters)}{stories[current]}"
-    if current<2:
-        current+=1
+    mail = request.POST.get('mail', False)
+    username = request.POST.get('username', False)
+
+    print(mail)
+    print(username)
+
+
+
+    if validate_email(mail):
+        pass
     else:
-        current=0
-    cache.set('otp',otp,300)
+        return render(request, 'API/email.html')
+
     your_email = config.EMAIL
     your_password = config.PASSWORD
-    sender=request.POST['mail']
-    username=request.POST['username']
-    # establishing connection with gmail
-    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+
+    cache.set('otp', otp, None)
+    
+    server = smtplib.SMTP('smtp.gmail.com', 587)
     server.ehlo()
+    server.starttls()
+
+    body = f'''OTP for alpha protocol
+    Thank you for registering for treasure hunt . Your one time password to get started is  {otp} .
+    We hope you keep it confidential. Vamos!!'''
+     
+
     server.login(your_email, your_password)
-    # the message to be emailed
-    msg = MIMEMultipart()
-    msg['From'] = your_email
-    msg['To'] = sender
-    msg['Subject'] = 'OTP for alpha protocol'
-    # string to store the body of the mail
-    body = f"{otp}"
-    # attach the body with the msg instance
-    msg.attach(MIMEText(body, 'plain'))
-    server.sendmail(your_email, [sender], msg.as_string())
+    server.sendmail(your_email, mail, body)
     server.close()
-    LeaderBoard.objects.create(id=otp,name=username,email=sender)
-    return render(request,'API/genotp.html')
+    LeaderBoard.objects.create(id=otp,name=username,email=mail)
+    return render(request, 'API/success.html')
 
 @api_view(['POST'])
 def verOtp(request):
-    otp=cache.get('otp')
+    print(request.data)
     code=request.data[0]['code']
+    print(code)
+    otp=cache.get('otp')
     if otp==code:
         cache.delete('otp')
         return Response(status=status.HTTP_200_OK)
@@ -77,13 +84,16 @@ def verOtp(request):
 
 @api_view(['POST'])
 def addScore(request):
+    print(request.data)
     otp=request.data[0]['otp']
     level=request.data[0]['level']
     time=request.data[0]['time']
+    time = 30.00-float(time)
     grp=LeaderBoard.objects.get(id=otp)
     grp.level=level
     grp.completion=time
     grp.save()
+    print(request.data)
     return Response(status=status.HTTP_200_OK)
 
 @api_view(["GET"])
@@ -96,6 +106,7 @@ def getOtp(request):
     return Response(data)
 
 def leaderBoard(request):
+   
     data=LeaderBoard.objects.all().exclude(level__isnull=True).order_by('-level','completion')[:10]
     context={
         "data":data
