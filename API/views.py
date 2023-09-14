@@ -60,6 +60,13 @@ def genOtp(request):
     otp = "000000"
     index_list = [0,3,6]
     # print(index_list[random.randint(0, 2)])
+
+    body = f'''<b>OTP for alpha protocol</b>
+<p>Thank you for registering for treasure hunt.</p>
+<p>Your one time password to get started is <b style="color:green">{otp}</b>.
+We hope you keep it confidential. Vamos!! </p>
+'''
+
     #!rechecking the logic here
     if email_count == 0:
         # user = LeaderBoard.objects.get(email=mail)
@@ -91,30 +98,27 @@ def genOtp(request):
         user = LeaderBoard(id=otp,name=username,email=mail,story=str(index_list[0]))
         user.save()
     else:
-        otp = ''.join([str(random.randint(0, 9)) for _ in range(5)])
-        val = str(index_list[random.randint(0, 2)])
-        otp = otp + val
-        user = LeaderBoard(id=otp,name=username,email=mail,story=val)
-        user.save()
+        # otp = ''.join([str(random.randint(0, 9)) for _ in range(5)])
+        # val = str(index_list[random.randint(0, 2)])
+        # otp = otp + val
+        # user = LeaderBoard(id=otp,name=username,email=mail,story=val)
+        # user.save()
+        body = f'''<center><b>Limit Exceeded</b></center>
+<p>You have Already played three times! We hope you Enjoyed🙏</p>
+'''
 
     # otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
     print(otp)
     cache.set('otp', otp, None)
     
     message = MIMEMultipart()
-    message['Subject'] = 'OTP for ALPHA PROTOCOL'
+    message['Subject'] = 'OTP for ALPHA PROTOCOL 2.0'
     message['From'] = your_email
     message['To'] = mail
 
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.ehlo()
     server.starttls()
-
-    body = f'''<b>OTP for alpha protocol</b>
-<p>Thank you for registering for treasure hunt.</p>
-<p>Your one time password to get started is <b style="color:green">{otp}</b>.
-We hope you keep it confidential. Vamos!! </p>
-'''
      
     html = f'''<html>
     <head>
@@ -134,12 +138,7 @@ We hope you keep it confidential. Vamos!! </p>
     server.login(your_email, your_password)
     server.sendmail(your_email, mail, message.as_string())
     server.close()
-    # LeaderBoard.objects.create(id=otp,name=username,email=mail)
-    # if(email_count == 0):
-    #     print("hi")
-    #     user = LeaderBoard.objects.get(email=mail)
-    #     user.story = val
-    #     user.save()
+
     return render(request, 'API/success.html')
 
 @api_view(['POST'])
