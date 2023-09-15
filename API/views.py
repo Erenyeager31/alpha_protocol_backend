@@ -55,8 +55,9 @@ def genOtp(request):
     your_password = config.PASSWORD
 
     #!Logic to check if the email previously existed or not
-    email_count = LeaderBoard.objects.values("email").count()
-    # print(email_count)
+    email_count = LeaderBoard.objects.filter(email=mail).count()
+
+    print(email_count)
     otp = "000000"
     index_list = [0,3,6]
     # print(index_list[random.randint(0, 2)])
