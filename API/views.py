@@ -69,11 +69,6 @@ def genOtp(request):
         otp = otp + val
         user = LeaderBoard(id=otp,name=username,email=mail,story=val)
         user.save()
-        body = f'''<b>OTP for alpha protocol</b>
-<p>Thank you for registering for treasure hunt.</p>
-<p>Your one time password to get started is <b style="color:green">{otp}</b>.
-We hope you keep it confidential. Vamos!! </p>
-'''
 
     elif email_count == 1:
         user = LeaderBoard.objects.values().get(email=mail)
@@ -84,11 +79,6 @@ We hope you keep it confidential. Vamos!! </p>
         otp = otp + val
         user = LeaderBoard(id=otp,name=username,email=mail,story=val)
         user.save()
-        body = f'''<b>OTP for alpha protocol</b>
-<p>Thank you for registering for treasure hunt.</p>
-<p>Your one time password to get started is <b style="color:green">{otp}</b>.
-We hope you keep it confidential. Vamos!! </p>
-'''
 
     elif email_count == 2:
         user = LeaderBoard.objects.values()
@@ -101,20 +91,6 @@ We hope you keep it confidential. Vamos!! </p>
         otp = otp + str(index_list[0])
         user = LeaderBoard(id=otp,name=username,email=mail,story=str(index_list[0]))
         user.save()
-        body = f'''<b>OTP for alpha protocol</b>
-<p>Thank you for registering for treasure hunt.</p>
-<p>Your one time password to get started is <b style="color:green">{otp}</b>.
-We hope you keep it confidential. Vamos!! </p>
-'''
-    else:
-        # otp = ''.join([str(random.randint(0, 9)) for _ in range(5)])
-        # val = str(index_list[random.randint(0, 2)])
-        # otp = otp + val
-        # user = LeaderBoard(id=otp,name=username,email=mail,story=val)
-        # user.save()
-        body = f'''<center><b>Limit Exceeded</b></center>
-<p>You have Already played three times! We hope you Enjoyed🙏</p>
-'''
 
     # otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
     print(otp)
@@ -129,11 +105,11 @@ We hope you keep it confidential. Vamos!! </p>
     server.ehlo()
     server.starttls()
      
-#     body = f'''<b>OTP for alpha protocol</b>
-# <p>Thank you for registering for treasure hunt.</p>
-# <p>Your one time password to get started is <b style="color:green">{otp}</b>.
-# We hope you keep it confidential. Vamos!! </p>
-# '''
+    body = f'''<b>OTP for alpha protocol</b>
+<p>Thank you for registering for treasure hunt.</p>
+<p>Your one time password to get started is <b style="color:green">{otp}</b>.
+We hope you keep it confidential. Vamos!! </p>
+'''
 
     html = f'''<html>
     <head>
