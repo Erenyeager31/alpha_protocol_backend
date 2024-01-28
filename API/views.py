@@ -44,8 +44,6 @@ def genOtp(request):
     print(mail)
     print(username)
 
-
-
     if validate_email(mail):
         pass
     else:
@@ -187,6 +185,7 @@ def delOtp(request):
 def timeConversion(time):
     time_remaining_seconds = float(time) * 60
     total_time_seconds = 35 * 60
+    # total_time_seconds = 25 * 60
     result_seconds = total_time_seconds - time_remaining_seconds
     result_minutes = result_seconds // 60
     result_seconds %= 60
